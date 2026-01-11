@@ -11,35 +11,59 @@ void printASCII( const std::vector<int>& vec ){
     std::cout << '\n';
 }
 
-int main(){
+bool parseInput( const std::string& input, int& result ){
+    //attempts to convert string to int: returns true iff success
+    try{
+        result = std::stoi(input);
+        return true;
+    }catch( const std::invalid_argument& ){
+        std::cout << "Invalid input, enter a number, 'x', or '*'\n";
+        return false;
+    }catch( const std::out_of_range& ){
+        std::cout << "Number out of range\n";
+        return false;
+    }
+}
 
-    std::vector<int> userNumberVector;
+void handleDelete( std::vector<int>& vec ){
+    //delete last element from vector if not empty
+    if( !vec.empty() ){
+        std::cout << "Deleted: " << vec.back() << '\n';
+        vec.pop_back();
+    }else{
+        std::cout << "Nothing to delete\n";
+    }
+}
 
+void handleNumericInput( const std::string& input, std::vector<int>& vec ){
+    //parse input and add to vector if valid
+    int num;
+    if( parseInput(input, num) ){
+        vec.push_back(num);
+        std::cout << "Logged: " << num << '\n';
+    }
+}
+
+void collectNumbers( std::vector<int>& vec ){
+    //main input loop for collecting numbers
     std::cout << "Enter in your numbers to convert to ASCII(enter '*' to stop, or 'x' to delete last entry): ";
     std::string input;
-    while(std::cin >> input){
+    while( std::cin >> input ){
         if( input == "*" ) break;
         
         if( input == "x" ){
-            if( !userNumberVector.empty() ){
-                std::cout << "Deleted: " << userNumberVector.back() << '\n';
-                userNumberVector.pop_back();
-            }else{
-                std::cout << "Nothing to delete\n";
-            }
+            handleDelete(vec);
             continue;
         }
         
-        try{
-            int num = std::stoi(input);
-            userNumberVector.push_back(num);
-            std::cout << "Logged: " << num << '\n';
-        }catch( const std::invalid_argument& ){
-            std::cout << "Invalid input, enter a number, 'x', or '*'\n";
-        }catch( const std::out_of_range& ){
-            std::cout << "Number out of range\n";
-        }
+        handleNumericInput(input, vec);
     }
+}
+
+int main(){
+
+    std::vector<int> userNumberVector;
+    collectNumbers(userNumberVector);
     printASCII(userNumberVector);
 
 return 0;
